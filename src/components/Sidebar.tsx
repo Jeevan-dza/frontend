@@ -7,16 +7,68 @@ import {
   Satellite, 
   FolderArchive, 
   BarChart3, 
-
   Settings,
   ChevronLeft,
   ChevronRight,
-  Cpu,
-  Radio,
-  Layers,
-  Sparkles,
-  ExternalLink
+  Radio
 } from 'lucide-react';
+
+const NAV_ITEMS = [
+  {
+    to: '/',
+    label: 'Home',
+    icon: Home,
+    badge: null,
+    description: 'AI Search & Mission Portal'
+  },
+  {
+    to: '/dashboard',
+    label: 'Analysis Dashboard',
+    icon: LayoutDashboard,
+    badge: 'LIVE',
+    badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
+    description: 'Interactive Map & AI Card'
+  },
+  {
+    to: '/compare',
+    label: 'Before vs After',
+    icon: GitCompare,
+    badge: 'STAR',
+    badgeColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40',
+    description: 'Dual Map Comparison Slider'
+  },
+  {
+    to: '/history',
+    label: 'Historical Disasters',
+    icon: FolderArchive,
+    badge: '4 EVENTS',
+    badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/40',
+    description: 'Assam, Bihar, Wayanad, Punjab'
+  },
+  {
+    to: '/satellite',
+    label: 'Satellite Explorer',
+    icon: Satellite,
+    badge: 'SAR',
+    badgeColor: 'bg-blue-500/20 text-blue-400 border-blue-500/40',
+    description: 'Multi-Mission Tasking & Sensors'
+  },
+  {
+    to: '/analytics',
+    label: 'Geospatial Analytics',
+    icon: BarChart3,
+    badge: 'CHARTS',
+    badgeColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40',
+    description: 'Multi-Year Trends & River Basins'
+  },
+  {
+    to: '/settings',
+    label: 'Platform Settings',
+    icon: Settings,
+    badge: null,
+    description: 'GIS Preferences & Profile'
+  }
+];
 
 interface SidebarProps {
   collapsed: boolean;
@@ -32,64 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile
 }) => {
   const location = useLocation();
-
-  const navItems = [
-    {
-      to: '/',
-      label: 'Home',
-      icon: Home,
-      badge: null,
-      description: 'AI Search & Mission Portal'
-    },
-    {
-      to: '/dashboard',
-      label: 'Analysis Dashboard',
-      icon: LayoutDashboard,
-      badge: 'LIVE',
-      badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40',
-      description: 'Interactive Map & AI Card'
-    },
-    {
-      to: '/compare',
-      label: 'Before vs After',
-      icon: GitCompare,
-      badge: 'STAR',
-      badgeColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40',
-      description: 'Dual Map Comparison Slider'
-    },
-    {
-      to: '/history',
-      label: 'Historical Disasters',
-      icon: FolderArchive,
-      badge: '4 EVENTS',
-      badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/40',
-      description: 'Assam, Bihar, Wayanad, Punjab'
-    },
-    {
-      to: '/satellite',
-      label: 'Satellite Explorer',
-      icon: Satellite,
-      badge: 'SAR',
-      badgeColor: 'bg-blue-500/20 text-blue-400 border-blue-500/40',
-      description: 'Multi-Mission Tasking & Sensors'
-    },
-    {
-      to: '/analytics',
-      label: 'Geospatial Analytics',
-      icon: BarChart3,
-      badge: 'CHARTS',
-      badgeColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40',
-      description: 'Multi-Year Trends & River Basins'
-    },
-
-    {
-      to: '/settings',
-      label: 'Platform Settings',
-      icon: Settings,
-      badge: null,
-      description: 'GIS Preferences & Profile'
-    }
-  ];
+  const navItems = NAV_ITEMS;
 
   return (
     <>

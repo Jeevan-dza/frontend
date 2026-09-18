@@ -8,11 +8,12 @@ import {
   Search, 
   Menu, 
   X, 
-  Sliders, 
-  Terminal,
-  Activity,
-  ChevronRight
+  Activity, 
+  ChevronRight, 
+  Sun, 
+  Moon 
 } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
@@ -25,6 +26,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }
   const [currentUtc, setCurrentUtc] = useState<string>('');
   const [quickQuery, setQuickQuery] = useState('');
   const [alertOpen, setAlertOpen] = useState(true);
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const updateTimes = () => {
@@ -81,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }
             </Link>
             <button 
               onClick={() => setAlertOpen(false)}
-              className="ml-2 text-red-400 hover:text-white p-0.5"
+              className="ml-2 text-red-400 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-400 rounded p-0.5"
               aria-label="Dismiss alert"
             >
               <X className="w-3.5 h-3.5" />
@@ -95,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }
         <div className="flex items-center gap-3">
           <button
             onClick={onToggleSidebar}
-            className="md:hidden p-2 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors"
+            className="md:hidden p-2 text-slate-400 hover:text-white hover:bg-slate-800/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 rounded-lg transition-colors"
             aria-label="Toggle navigation menu"
           >
             {isSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -157,7 +159,7 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }
           </div>
 
           {/* Mission Time Clock */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0F172A] border border-slate-800 text-[11px] font-mono text-cyan-300">
+          <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0F172A] border border-slate-800 text-[11px] font-mono text-cyan-300">
             <Clock className="w-3.5 h-3.5 text-cyan-400" />
             <div className="flex flex-col text-right leading-none">
               <span>{currentTime || '00:00:00'} IST</span>
@@ -165,9 +167,24 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar, isSidebarOpen }
             </div>
           </div>
 
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="relative flex h-8 w-14 items-center rounded-full border border-slate-700 bg-[#0F172A] p-1 text-slate-400 shadow-sm transition-all duration-300 hover:border-cyan-500 hover:text-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-pressed={theme === 'light'}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            <Sun className="absolute left-1.5 h-3.5 w-3.5" aria-hidden="true" />
+            <Moon className="absolute right-1.5 h-3.5 w-3.5" aria-hidden="true" />
+            <span
+              className={`relative z-10 h-5 w-5 rounded-full bg-cyan-400 shadow-md shadow-cyan-500/30 transition-transform duration-300 ${theme === 'light' ? 'translate-x-6' : 'translate-x-0'}`}
+            />
+          </button>
+
           <Link
             to="/dashboard"
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-medium tracking-wide shadow-md shadow-cyan-900/30 transition-all active:scale-95"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 text-white text-xs font-medium tracking-wide shadow-md shadow-cyan-900/30 transition-all active:scale-95"
           >
             <Activity className="w-3.5 h-3.5" />
             <span>MISSION VIEW</span>

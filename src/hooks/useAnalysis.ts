@@ -30,6 +30,8 @@ export interface AnalysisResult {
   roadsList: RoadSegment[];
   scenario: 'assam' | 'karnataka' | 'kerala';
   floodTrend: { month: string; areaSqKm: number }[];
+  isSimulatedFallback?: boolean;
+  archetypeRegion?: string;
 }
 
 export type ProcessingStep =
@@ -54,6 +56,7 @@ async function mockResolver(query: string): Promise<AnalysisResult> {
   const q = query.toLowerCase();
   await delay(2200);
 
+  // Karnataka Deforestation
   if (q.includes('karnataka') || q.includes('forest') || q.includes('deforest')) {
     return {
       query,
@@ -80,6 +83,7 @@ async function mockResolver(query: string): Promise<AnalysisResult> {
     };
   }
 
+  // Kerala / Wayanad
   if (q.includes('kerala') || q.includes('wayanad')) {
     return {
       query,
@@ -106,17 +110,21 @@ async function mockResolver(query: string): Promise<AnalysisResult> {
     };
   }
 
-  // Default: Assam Floods
+  // Assam Floods (Explicit match)
+  const isAssamExplicit = q.includes('assam') || q.includes('brahmaputra') || q.includes('guwahati') || q.includes('kaziranga');
+
   return {
     query,
     confidence: '94%', confidenceNum: 94,
-    sensor: 'Sentinel-1 SAR',
+    sensor: 'Sentinel-1 SAR (C-Band Interferometric)',
     affectedRoadsCount: 12,
     freshness: '5 hours ago',
     location: 'Assam (Brahmaputra Valley)',
     inundatedArea: '342.6 km²',
     coordinates: [26.32, 92.58],
     scenario: 'assam',
+    isSimulatedFallback: !isAssamExplicit,
+    archetypeRegion: 'Brahmaputra Basin Flood Archetype',
     roadsList: [
       { id: 'NH-37',  name: 'National Highway 37 (Nagaon – Jakhalabandha)', status: 'Severely Inundated', waterDepth: '1.4m' },
       { id: 'SH-12',  name: 'State Highway 12 (Morigaon Sector)', status: 'Cut-off / Impassable', waterDepth: '1.8m' },

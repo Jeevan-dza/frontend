@@ -21,7 +21,7 @@ import {
   ShieldCheck, 
   Layers, 
   Download,
-  Activity
+  CheckCircle2
 } from 'lucide-react';
 import { ANALYTICS_DATA } from '../data/mockData';
 
@@ -38,39 +38,67 @@ ChartJS.register(
   Filler
 );
 
-export const AnalyticsPage: React.FC = () => {
-  // Chart.js dark theme options
-  const baseChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: '#94a3b8',
-          font: { family: 'JetBrains Mono', size: 11 }
-        }
-      },
-      tooltip: {
-        backgroundColor: '#0f172a',
-        titleColor: '#38bdf8',
-        bodyColor: '#f8fafc',
-        borderColor: '#334155',
-        borderWidth: 1,
-        padding: 10
+// Chart.js dark theme options
+const BASE_CHART_OPTIONS = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: 'top' as const,
+      labels: {
+        color: '#94a3b8',
+        font: { family: 'JetBrains Mono', size: 11 }
       }
     },
-    scales: {
-      x: {
-        ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } },
-        grid: { color: 'rgba(51, 65, 85, 0.25)' }
-      },
-      y: {
-        ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } },
-        grid: { color: 'rgba(51, 65, 85, 0.25)' }
-      }
+    tooltip: {
+      backgroundColor: '#0f172a',
+      titleColor: '#38bdf8',
+      bodyColor: '#f8fafc',
+      borderColor: '#334155',
+      borderWidth: 1,
+      padding: 10
     }
+  },
+  scales: {
+    x: {
+      ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } },
+      grid: { color: 'rgba(51, 65, 85, 0.25)' }
+    },
+    y: {
+      ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } },
+      grid: { color: 'rgba(51, 65, 85, 0.25)' }
+    }
+  }
+};
+
+export const AnalyticsPage: React.FC = () => {
+  const [exportToast, setExportToast] = React.useState<string | null>(null);
+
+  const handleExport = () => {
+    const csvRows = [
+      ['Metric', 'Value'],
+      ['Total Disasters', ANALYTICS_DATA.summary.totalDisasters],
+      ['Flood Events', ANALYTICS_DATA.summary.floodEvents],
+      ['Images Processed', ANALYTICS_DATA.summary.imagesProcessed],
+      ['Monitoring Regions', ANALYTICS_DATA.summary.monitoringRegions],
+      ['SAR Coverage (km\u00b2)', ANALYTICS_DATA.summary.sarCoverageSqKm],
+      ['Model Accuracy Avg', ANALYTICS_DATA.summary.modelAccuracyAvg],
+    ];
+    const csvContent = csvRows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'satquery-analytics-summary.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setExportToast('Analytics dataset exported as CSV successfully!');
+    setTimeout(() => setExportToast(null), 3500);
   };
+
+  const baseChartOptions = BASE_CHART_OPTIONS;
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8">
@@ -89,13 +117,21 @@ export const AnalyticsPage: React.FC = () => {
           </p>
         </div>
 
-        <button 
-          onClick={() => alert('Exporting full analytics dataset in CSV/GeoJSON format...')}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0F172A] border border-slate-700 hover:border-cyan-500 text-cyan-300 text-xs font-mono transition-colors self-start md:self-auto"
-        >
-          <Download className="w-4 h-4" />
-          <span>EXPORT CSV / JSON</span>
-        </button>
+        <div className="flex flex-col items-start md:items-end gap-2 self-start md:self-auto">
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0F172A] border border-slate-700 hover:border-cyan-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 text-cyan-300 text-xs font-mono transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            <span>EXPORT CSV / JSON</span>
+          </button>
+          {exportToast && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs font-mono">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <span>{exportToast}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* METRICS CARDS: Total Disasters, Flood Events, Images Processed, Monitoring Regions */}

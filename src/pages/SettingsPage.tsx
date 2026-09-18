@@ -8,12 +8,47 @@ import {
   User, 
   Check, 
   ShieldCheck, 
-  Key, 
-  Radio,
-  Save,
-  CheckCircle2
+  Save, 
+  CheckCircle2 
 } from 'lucide-react';
 
+// ── Custom Toggle Switch ─────────────────────────────────────────────────────
+interface ToggleProps {
+  checked: boolean;
+  onChange: (val: boolean) => void;
+  label: string;
+  description?: string;
+  id: string;
+}
+
+const Toggle: React.FC<ToggleProps> = ({ checked, onChange, label, description, id }) => (
+  <div className="flex items-center justify-between p-2 rounded-xl bg-[#050816] border border-slate-800">
+    <div>
+      <div className="text-slate-200 text-xs font-mono">{label}</div>
+      {description && <div className="text-[10px] text-slate-400 mt-0.5">{description}</div>}
+    </div>
+    <button
+      id={id}
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`
+        relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border-2 transition-colors duration-200
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050816]
+        ${checked ? 'bg-cyan-500 border-cyan-400' : 'bg-slate-700 border-slate-600'}
+      `}
+    >
+      <span
+        className={`
+          inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200
+          ${checked ? 'translate-x-[17px]' : 'translate-x-[2px]'}
+        `}
+      />
+    </button>
+  </div>
+);
+
+// ── Main Settings Page ───────────────────────────────────────────────────────
 export const SettingsPage: React.FC = () => {
   const [theme, setTheme] = useState<'dark-futuristic' | 'tactical-contrast' | 'obsidian'>('dark-futuristic');
   const [defaultBasemap, setDefaultBasemap] = useState<'satellite' | 'dark' | 'hybrid'>('satellite');
@@ -32,16 +67,16 @@ export const SettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 pb-20 md:pb-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs tracking-wider uppercase">
             <Settings className="w-4 h-4" />
-            <span>Platform Configuration & GIS Preferences</span>
+            <span>Platform Configuration &amp; GIS Preferences</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold font-tech text-white mt-1">
-            SETTINGS & USER PROFILE
+            SETTINGS &amp; USER PROFILE
           </h1>
           <p className="text-sm text-slate-400">
             Tailor telemetry pipelines, export codecs, and operational clearance parameters.
@@ -50,7 +85,7 @@ export const SettingsPage: React.FC = () => {
 
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-[#050816] font-tech font-bold text-xs tracking-wider shadow-lg shadow-cyan-950 transition-all active:scale-95 self-start sm:self-auto"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 text-[#050816] font-tech font-bold text-xs tracking-wider shadow-lg shadow-cyan-950 transition-all active:scale-95 self-start sm:self-auto"
         >
           <Save className="w-4 h-4" />
           <span>SAVE PREFERENCES</span>
@@ -58,7 +93,7 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {savedNotice && (
-        <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-mono text-xs flex items-center gap-2 animate-fade-in">
+        <div className="p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 font-mono text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span>Configuration preferences updated and stored to local mission storage.</span>
         </div>
@@ -78,10 +113,10 @@ export const SettingsPage: React.FC = () => {
               { id: 'tactical-contrast', label: 'High-Contrast Tactical (Defense Ops)', desc: 'Pure monochrome high-visibility grid with amber status indicators.' },
               { id: 'obsidian', label: 'Obsidian Night (OLED Energy Saver)', desc: 'Zero-nit deep pitch black for low-light field command tents.' }
             ].map((th) => (
-              <div
+              <button
                 key={th.id}
-                onClick={() => setTheme(th.id as any)}
-                className={`p-3 rounded-xl border cursor-pointer transition-all flex items-start justify-between ${
+                onClick={() => setTheme(th.id as typeof theme)}
+                className={`w-full text-left p-3 rounded-xl border cursor-pointer transition-all flex items-start justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
                   theme === th.id
                     ? 'bg-cyan-950/30 border-cyan-400 text-white'
                     : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:border-slate-700'
@@ -92,7 +127,7 @@ export const SettingsPage: React.FC = () => {
                   <div className="text-[10px] text-slate-400 mt-0.5">{th.desc}</div>
                 </div>
                 {theme === th.id && <Check className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />}
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -101,16 +136,17 @@ export const SettingsPage: React.FC = () => {
         <div className="p-6 rounded-2xl bg-[#0F172A] border border-slate-800 shadow-xl space-y-4">
           <div className="flex items-center gap-2.5 text-white font-tech font-bold text-base border-b border-slate-800 pb-3">
             <Map className="w-5 h-5 text-cyan-400" />
-            <span>MAP & GIS PREFERENCES</span>
+            <span>MAP &amp; GIS PREFERENCES</span>
           </div>
 
           <div className="space-y-3 font-mono text-xs">
             <div>
-              <label className="text-slate-400 block mb-1">DEFAULT SATELLITE BASEMAP:</label>
+              <label htmlFor="basemap-select" className="text-slate-400 block mb-1">DEFAULT SATELLITE BASEMAP:</label>
               <select
+                id="basemap-select"
                 value={defaultBasemap}
-                onChange={(e) => setDefaultBasemap(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-xl bg-[#050816] border border-slate-700 text-white focus:outline-none focus:border-cyan-500"
+                onChange={(e) => setDefaultBasemap(e.target.value as typeof defaultBasemap)}
+                className="w-full px-3 py-2 rounded-xl bg-[#050816] border border-slate-700 text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:border-cyan-500 cursor-pointer"
               >
                 <option value="satellite">Esri World Imagery (High-Res 0.5m)</option>
                 <option value="dark">CartoDB Dark Matter (High Contrast)</option>
@@ -124,8 +160,8 @@ export const SettingsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setCoordFormat('decimal')}
-                  className={`p-2 rounded-xl border text-center transition-colors ${
-                    coordFormat === 'decimal' ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' : 'bg-[#050816] border-slate-800 text-slate-400'
+                  className={`p-2 rounded-xl border text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                    coordFormat === 'decimal' ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' : 'bg-[#050816] border-slate-800 text-slate-400 hover:border-slate-700'
                   }`}
                 >
                   Decimal Degrees (DD)
@@ -133,8 +169,8 @@ export const SettingsPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setCoordFormat('dms')}
-                  className={`p-2 rounded-xl border text-center transition-colors ${
-                    coordFormat === 'dms' ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' : 'bg-[#050816] border-slate-800 text-slate-400'
+                  className={`p-2 rounded-xl border text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                    coordFormat === 'dms' ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' : 'bg-[#050816] border-slate-800 text-slate-400 hover:border-slate-700'
                   }`}
                 >
                   Deg/Min/Sec (DMS)
@@ -142,18 +178,13 @@ export const SettingsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <div>
-                <div className="text-slate-200">ENABLE 3D TERRAIN MESH</div>
-                <div className="text-[10px] text-slate-400">Cartosat & SRTM 30m Digital Elevation Model</div>
-              </div>
-              <input
-                type="checkbox"
-                checked={enable3dTerrain}
-                onChange={(e) => setEnable3dTerrain(e.target.checked)}
-                className="w-4 h-4 rounded accent-cyan-400"
-              />
-            </div>
+            <Toggle
+              id="toggle-3d-terrain"
+              label="ENABLE 3D TERRAIN MESH"
+              description="Cartosat & SRTM 30m Digital Elevation Model"
+              checked={enable3dTerrain}
+              onChange={setEnable3dTerrain}
+            />
           </div>
         </div>
 
@@ -161,16 +192,17 @@ export const SettingsPage: React.FC = () => {
         <div className="p-6 rounded-2xl bg-[#0F172A] border border-slate-800 shadow-xl space-y-4">
           <div className="flex items-center gap-2.5 text-white font-tech font-bold text-base border-b border-slate-800 pb-3">
             <Download className="w-5 h-5 text-cyan-400" />
-            <span>DOWNLOAD & EXPORT PREFERENCES</span>
+            <span>DOWNLOAD &amp; EXPORT PREFERENCES</span>
           </div>
 
           <div className="space-y-3 font-mono text-xs">
             <div>
-              <label className="text-slate-400 block mb-1">DEFAULT VECTOR & SITREP FORMAT:</label>
+              <label htmlFor="export-format-select" className="text-slate-400 block mb-1">DEFAULT VECTOR &amp; SITREP FORMAT:</label>
               <select
+                id="export-format-select"
                 value={exportFormat}
-                onChange={(e) => setExportFormat(e.target.value as any)}
-                className="w-full px-3 py-2 rounded-xl bg-[#050816] border border-slate-700 text-white focus:outline-none focus:border-cyan-500"
+                onChange={(e) => setExportFormat(e.target.value as typeof exportFormat)}
+                className="w-full px-3 py-2 rounded-xl bg-[#050816] border border-slate-700 text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:border-cyan-500 cursor-pointer"
               >
                 <option value="geojson">GeoJSON FeatureCollection (.geojson)</option>
                 <option value="geotiff">Cloud Optimized GeoTIFF (.tif COG)</option>
@@ -181,8 +213,8 @@ export const SettingsPage: React.FC = () => {
 
             <div className="p-3 rounded-xl bg-[#050816] border border-slate-800 space-y-1">
               <div className="text-slate-400 text-[10px]">CRS PROJECTION SYSTEM:</div>
-              <div className="text-cyan-300 font-bold">EPSG:4326 - WGS 84 (Global Geographic)</div>
-              <div className="text-slate-400 text-[10px]">Alternate: EPSG:32643 - UTM Zone 43N (India)</div>
+              <div className="text-cyan-300 font-bold">EPSG:4326 — WGS 84 (Global Geographic)</div>
+              <div className="text-slate-400 text-[10px]">Alternate: EPSG:32643 — UTM Zone 43N (India)</div>
             </div>
           </div>
         </div>
@@ -194,49 +226,32 @@ export const SettingsPage: React.FC = () => {
             <span>NOTIFICATION SETTINGS</span>
           </div>
 
-          <div className="space-y-3 font-mono text-xs">
-            <div className="flex items-center justify-between p-2 rounded-xl bg-[#050816] border border-slate-800">
-              <div>
-                <div className="text-slate-200">REAL-TIME INUNDATION WEBHOOKS</div>
-                <div className="text-[10px] text-slate-400">Push flood vector updates to emergency dispatch API</div>
-              </div>
-              <input
-                type="checkbox"
-                checked={alertWebhooks}
-                onChange={(e) => setAlertWebhooks(e.target.checked)}
-                className="w-4 h-4 rounded accent-cyan-400"
-              />
-            </div>
-
-            <div className="flex items-center justify-between p-2 rounded-xl bg-[#050816] border border-slate-800">
-              <div>
-                <div className="text-slate-200">SATELLITE OVERPASS ALERTS</div>
-                <div className="text-[10px] text-slate-400">Notify 15 min prior to Sentinel-1 / RISAT passes</div>
-              </div>
-              <input
-                type="checkbox"
-                checked={satellitePassAlerts}
-                onChange={(e) => setSatellitePassAlerts(e.target.checked)}
-                className="w-4 h-4 rounded accent-cyan-400"
-              />
-            </div>
-
-            <div className="flex items-center justify-between p-2 rounded-xl bg-[#050816] border border-slate-800">
-              <div>
-                <div className="text-slate-200">NDMA RSS DISASTER SYNC</div>
-                <div className="text-[10px] text-slate-400">Harmonize live meteorological advisories</div>
-              </div>
-              <input
-                type="checkbox"
-                checked={ndmaFeedSync}
-                onChange={(e) => setNdmaFeedSync(e.target.checked)}
-                className="w-4 h-4 rounded accent-cyan-400"
-              />
-            </div>
+          <div className="space-y-3">
+            <Toggle
+              id="toggle-webhooks"
+              label="REAL-TIME INUNDATION WEBHOOKS"
+              description="Push flood vector updates to emergency dispatch API"
+              checked={alertWebhooks}
+              onChange={setAlertWebhooks}
+            />
+            <Toggle
+              id="toggle-satellite-alerts"
+              label="SATELLITE OVERPASS ALERTS"
+              description="Notify 15 min prior to Sentinel-1 / RISAT passes"
+              checked={satellitePassAlerts}
+              onChange={setSatellitePassAlerts}
+            />
+            <Toggle
+              id="toggle-ndma-sync"
+              label="NDMA RSS DISASTER SYNC"
+              description="Harmonize live meteorological advisories"
+              checked={ndmaFeedSync}
+              onChange={setNdmaFeedSync}
+            />
           </div>
         </div>
 
-        {/* 5. User Profile (Spans across or card) */}
+        {/* 5. User Profile — spans full width */}
         <div className="md:col-span-2 p-6 rounded-2xl bg-[#0F172A] border border-cyan-500/30 shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-3">
             <div className="flex items-center gap-2.5 text-white font-tech font-bold text-base">

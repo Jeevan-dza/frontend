@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { 
-  Layers, 
-  Maximize2, 
   Compass, 
-  Eye, 
   MapPin, 
-  ShieldAlert, 
-  Crosshair,
-  Info,
-  Navigation
+  Crosshair 
 } from 'lucide-react';
 import { MapLayerConfig } from '../types';
 import { MOCK_GEOJSON_FEATURES } from '../data/mockData';
+
+const BASEMAP_URLS = {
+  dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+};
 
 interface LeafletMapProps {
   center?: [number, number];
@@ -46,12 +46,7 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
   const [activeBasemap, setActiveBasemap] = useState<'dark' | 'satellite' | 'street'>('satellite');
   const [currentZoom, setCurrentZoom] = useState<number>(zoom);
 
-  // Basemap URLs
-  const basemapUrls = {
-    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    street: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-  };
+  const basemapUrls = BASEMAP_URLS;
 
   const tileLayerRef = useRef<L.TileLayer | null>(null);
 
@@ -67,10 +62,22 @@ export const LeafletMap: React.FC<LeafletMapProps> = ({
       attributionControl: false
     });
 
-    tileLayerRef.current = L.tileLayer(basemapUrls[activeBasemap], {
+    const tileLayer = L.tileLayer(basemapUrls[activeBasemap], {
       maxZoom: 19,
-      attribution: '&copy; Esri & NASA EarthData'
-    }).addTo(map);
+      attribution: '&copy; Esri & NASA EarthData',
+      subdomains: 'abcd'
+    });
+
+    let fallbackTriggered = false;
+    tileLayer.on('tileerror', () => {
+      if (!fallbackTriggered && activeBasemap === 'satellite') {
+        fallbackTriggered = true;
+        tileLayer.setUrl(basemapUrls.dark);
+      }
+    });
+
+    tileLayer.addTo(map);
+    tileLayerRef.current = tileLayer;
 
     const layerGroup = L.layerGroup().addTo(map);
     layerGroupRef.current = layerGroup;

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,7 +16,13 @@
   </head>
   <body class="bg-[#050816] text-[#F8FAFC] antialiased selection:bg-cyan-500/30 selection:text-cyan-200">
     <div id="root"></div>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('satquery-theme') === 'light' ? 'light' : 'dark';
+      } catch {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

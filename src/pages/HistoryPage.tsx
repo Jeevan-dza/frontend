@@ -7,9 +7,7 @@ import {
   AlertTriangle, 
   ArrowRight, 
   Search,
-  CheckCircle2,
-  Sliders,
-  Eye
+  CheckCircle2
 } from 'lucide-react';
 
 interface DisasterCardItem {
@@ -24,61 +22,62 @@ interface DisasterCardItem {
   targetUrl: string;
 }
 
+// The 4 prominent examples specified by user:
+// * Assam Floods
+// * Bihar Floods
+// * Wayanad Landslide
+// * Punjab Floods
+const DISASTER_LIST: DisasterCardItem[] = [
+  {
+    id: 'assam-floods',
+    title: 'Assam Floods',
+    date: 'July 2024',
+    state: 'Assam',
+    severity: 'Critical',
+    severityColor: 'bg-red-950/90 text-red-300 border-red-500/50',
+    summary: 'Brahmaputra river overspill across 28 districts, inundating over 340 km² and severing National Highway 37.',
+    image: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
+    targetUrl: '/dashboard?q=Find+flooded+roads+in+Assam'
+  },
+  {
+    id: 'bihar-floods',
+    title: 'Bihar Floods',
+    date: 'August 2023',
+    state: 'Bihar',
+    severity: 'Severe',
+    severityColor: 'bg-orange-950/90 text-orange-300 border-orange-500/50',
+    summary: 'Kosi and Gandak river surges affecting Supaul, Madhepura, and Saharsa with widespread embankment displacement.',
+    image: 'https://images.unsplash.com/photo-1516214104703-d870798883c5?auto=format&fit=crop&w=800&q=80',
+    targetUrl: '/dashboard?q=Bihar+floods+inundation+analysis'
+  },
+  {
+    id: 'wayanad-landslide',
+    title: 'Wayanad Landslide',
+    date: 'July 2024',
+    state: 'Kerala',
+    severity: 'Critical',
+    severityColor: 'bg-red-950/90 text-red-300 border-red-500/50',
+    summary: 'Catastrophic debris flow in Meppadi and Chooralmala quantified through Sentinel-1 SAR backscatter coherence loss.',
+    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+    targetUrl: '/compare?q=Wayanad+landslide+debris+change'
+  },
+  {
+    id: 'punjab-floods',
+    title: 'Punjab Floods',
+    date: 'July 2023',
+    state: 'Punjab',
+    severity: 'High',
+    severityColor: 'bg-amber-950/90 text-amber-300 border-amber-500/50',
+    summary: 'Sutlej and Ghaggar overflow submerging extensive agricultural paddies in Patiala, Ropar, and Ferozepur.',
+    image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
+    targetUrl: '/dashboard?q=Punjab+floods+crop+inundation'
+  }
+];
+
 export const HistoryPage: React.FC = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-
-  // The 4 prominent examples specified by user:
-  // * Assam Floods
-  // * Bihar Floods
-  // * Wayanad Landslide
-  // * Punjab Floods
-  const disasterList: DisasterCardItem[] = [
-    {
-      id: 'assam-floods',
-      title: 'Assam Floods',
-      date: 'July 2024',
-      state: 'Assam',
-      severity: 'Critical',
-      severityColor: 'bg-red-950/90 text-red-300 border-red-500/50',
-      summary: 'Brahmaputra river overspill across 28 districts, inundating over 340 km² and severing National Highway 37.',
-      image: 'https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=800&q=80',
-      targetUrl: '/dashboard?q=Find+flooded+roads+in+Assam'
-    },
-    {
-      id: 'bihar-floods',
-      title: 'Bihar Floods',
-      date: 'August 2023',
-      state: 'Bihar',
-      severity: 'Severe',
-      severityColor: 'bg-orange-950/90 text-orange-300 border-orange-500/50',
-      summary: 'Kosi and Gandak river surges affecting Supaul, Madhepura, and Saharsa with widespread embankment displacement.',
-      image: 'https://images.unsplash.com/photo-1516214104703-d870798883c5?auto=format&fit=crop&w=800&q=80',
-      targetUrl: '/dashboard?q=Bihar+floods+inundation+analysis'
-    },
-    {
-      id: 'wayanad-landslide',
-      title: 'Wayanad Landslide',
-      date: 'July 2024',
-      state: 'Kerala',
-      severity: 'Critical',
-      severityColor: 'bg-red-950/90 text-red-300 border-red-500/50',
-      summary: 'Catastrophic debris flow in Meppadi and Chooralmala quantified through Sentinel-1 SAR backscatter coherence loss.',
-      image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
-      targetUrl: '/compare?q=Wayanad+landslide+debris+change'
-    },
-    {
-      id: 'punjab-floods',
-      title: 'Punjab Floods',
-      date: 'July 2023',
-      state: 'Punjab',
-      severity: 'High',
-      severityColor: 'bg-amber-950/90 text-amber-300 border-amber-500/50',
-      summary: 'Sutlej and Ghaggar overflow submerging extensive agricultural paddies in Patiala, Ropar, and Ferozepur.',
-      image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&q=80',
-      targetUrl: '/dashboard?q=Punjab+floods+crop+inundation'
-    }
-  ];
+  const disasterList = DISASTER_LIST;
 
   const filteredList = disasterList.filter(d => 
     d.title.toLowerCase().includes(searchQuery.toLowerCase()) ||

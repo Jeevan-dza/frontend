@@ -1,18 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { MobileNav } from './components/MobileNav';
 
-// Pages
-import { HomePage } from './pages/HomePage';
-import { DashboardPage } from './pages/DashboardPage';
-import { ComparePage } from './pages/ComparePage';
-import { HistoryPage } from './pages/HistoryPage';
+// Lazy-loaded Pages for sub-second initial bundle load
+const HomePage = lazy(() => import('./pages/HomePage').then(m => ({ default: m.HomePage })));
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
+const ComparePage = lazy(() => import('./pages/ComparePage').then(m => ({ default: m.ComparePage })));
+const HistoryPage = lazy(() => import('./pages/HistoryPage').then(m => ({ default: m.HistoryPage })));
+const SatellitePage = lazy(() => import('./pages/SatellitePage').then(m => ({ default: m.SatellitePage })));
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage').then(m => ({ default: m.AnalyticsPage })));
+const SettingsPage = lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 
-import { SatellitePage } from './pages/SatellitePage';
-import { AnalyticsPage } from './pages/AnalyticsPage';
-import { SettingsPage } from './pages/SettingsPage';
+// Mission Telemetry Suspense Loader
+const TelemetryLoader: React.FC = () => (
+  <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] p-8 text-center">
+    <div className="relative w-16 h-16 mb-4">
+      <div className="absolute inset-0 rounded-full border-2 border-cyan-500/20 animate-ping" />
+      <div className="absolute inset-0 rounded-full border-2 border-t-cyan-400 border-r-transparent border-b-cyan-500 border-l-transparent animate-spin" />
+      <div className="absolute inset-2 rounded-full border border-blue-500/40 border-dashed animate-spin [animation-direction:reverse] [animation-duration:4s]" />
+    </div>
+    <div className="font-tech text-cyan-300 font-bold text-sm tracking-widest uppercase">
+      INITIALIZING MISSION VIEWPORT
+    </div>
+    <div className="font-mono text-slate-400 text-xs mt-1">
+      Synthesizing Sentinel SAR &amp; MOSDAC Geospatial Pipeline...
+    </div>
+  </div>
+);
 
 export default function App() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
@@ -38,18 +54,19 @@ export default function App() {
 
           {/* Main Application Routes Viewport */}
           <main className="flex-1 overflow-y-auto pb-16 md:pb-0">
-            <Routes>
-              {/* Mission Routes */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/compare" element={<ComparePage />} />
-              <Route path="/history" element={<HistoryPage />} />
-              <Route path="/satellite" element={<SatellitePage />} />
-              <Route path="/analytics" element={<AnalyticsPage />} />
-
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="*" element={<HomePage />} />
-            </Routes>
+            <Suspense fallback={<TelemetryLoader />}>
+              <Routes>
+                {/* Mission Routes */}
+                <Route path="/" element={<HomePage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/compare" element={<ComparePage />} />
+                <Route path="/history" element={<HistoryPage />} />
+                <Route path="/satellite" element={<SatellitePage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="*" element={<HomePage />} />
+              </Routes>
+            </Suspense>
           </main>
         </div>
 

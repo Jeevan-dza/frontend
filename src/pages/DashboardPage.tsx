@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Search,
@@ -186,6 +186,12 @@ const FloodTrendChart: React.FC<{ trend: { month: string; areaSqKm: number }[]; 
   );
 };
 
+const QUICK_PRESETS = [
+  { label: 'Assam Floods', q: 'Find flooded roads in Assam' },
+  { label: 'Karnataka Forest', q: 'Detect deforestation in Karnataka' },
+  { label: 'Kerala 2018', q: 'Compare Kerala before and after floods' },
+];
+
 // --- Main Dashboard Component ---------------------------------------------
 export const DashboardPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -291,11 +297,7 @@ export const DashboardPage: React.FC = () => {
         {/* Quick Presets */}
         <div className="hidden lg:flex items-center gap-2 text-xs font-mono">
           <span className="text-slate-400">QUICK:</span>
-          {[
-            { label: 'Assam Floods', q: 'Find flooded roads in Assam' },
-            { label: 'Karnataka Forest', q: 'Detect deforestation in Karnataka' },
-            { label: 'Kerala 2018', q: 'Compare Kerala before and after floods' },
-          ].map(({ label, q }) => (
+          {QUICK_PRESETS.map(({ label, q }) => (
             <button
               key={label}
               onClick={() => { setInputQuery(q); execute(q); }}
@@ -306,6 +308,21 @@ export const DashboardPage: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* --- Simulation Archetype Banner for unindexed queries --- */}
+      {data?.isSimulatedFallback && (
+        <div className="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 flex items-center justify-between text-xs font-mono text-amber-200 z-10 shrink-0">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>
+              <strong className="text-amber-300">DEMO SIMULATION:</strong> Displaying pre-trained SAR pipeline weights for archetype [<em>{data.archetypeRegion || 'Brahmaputra Basin'}</em>] for unindexed query: &ldquo;{data.query}&rdquo;
+            </span>
+          </div>
+          <span className="hidden sm:inline-block px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold border border-amber-500/30">
+            MODEL GENERALIZATION ACTIVE
+          </span>
+        </div>
+      )}
 
       {/* --- Layer Chip Strip (ABOVE map — no overlap possible) ------------- */}
       <div className="shrink-0 border-b border-slate-800/60 bg-[#060C1A] px-4 py-1.5 flex items-center gap-2 overflow-x-auto z-10 scrollbar-none">

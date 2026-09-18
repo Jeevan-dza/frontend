@@ -4,7 +4,6 @@ import {
   Home, 
   LayoutDashboard, 
   GitCompare, 
-  Satellite, 
   BarChart3,
   FolderArchive
 } from 'lucide-react';
@@ -14,23 +13,30 @@ export const MobileNav: React.FC = () => {
     { to: '/', label: 'Home', icon: Home },
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { to: '/compare', label: 'Compare', icon: GitCompare },
-    { to: '/satellite', label: 'Sensors', icon: Satellite },
-    { to: '/analytics', label: 'Analytics', icon: BarChart3 },
     { to: '/history', label: 'History', icon: FolderArchive },
-
+    { to: '/analytics', label: 'Analytics', icon: BarChart3 },
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#070D1E]/95 backdrop-blur-xl border-t border-slate-800 px-2 py-1.5 flex items-center justify-around">
+    <nav
+      aria-label="Mobile navigation"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#070D1E]/95 backdrop-blur-xl border-t border-slate-800 px-1 py-1.5 flex items-center justify-around"
+    >
       {items.map((item) => {
         const Icon = item.icon;
         return (
           <NavLink
             key={item.to}
             to={item.to}
+            end={item.to === '/'}
+            aria-label={item.label}
             className={({ isActive }) => `
-              flex flex-col items-center gap-0.5 px-2.5 py-1 rounded-lg transition-colors
-              ${isActive ? 'text-cyan-400 font-semibold' : 'text-slate-400 hover:text-slate-200'}
+              flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400
+              ${isActive
+                ? 'text-cyan-400 bg-cyan-500/10'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+              }
             `}
           >
             <Icon className="w-5 h-5" />

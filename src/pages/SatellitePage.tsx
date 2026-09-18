@@ -2,20 +2,31 @@ import React, { useState } from 'react';
 import { 
   Satellite, 
   Layers, 
-  Calendar, 
-  Compass, 
   Sliders, 
-  Eye, 
   Sparkles, 
-  RefreshCw, 
   ShieldCheck, 
-  Activity, 
-  Info,
-  Radio,
-  CheckCircle2
+  Radio, 
+  CheckCircle2 
 } from 'lucide-react';
 import { LeafletMap } from '../components/LeafletMap';
 import { SATELLITE_MISSIONS } from '../data/mockData';
+
+// Each mission defaults to its primary operational theatre
+const MISSION_CENTERS: Record<string, [number, number]> = {
+  'sentinel-1':  [26.32, 92.58],  // Assam Brahmaputra — primary flood zone
+  'sentinel-2':  [12.42, 75.73],  // Karnataka Western Ghats — optical/NDVI
+  'cartosat-3':  [28.61, 77.20],  // Delhi NCR — high-res urban mapping
+  'risat-2br1':  [26.32, 92.58],  // Assam — all-weather radar
+  'landsat-9':   [23.26, 77.41],  // Bhopal — thermal IR mid-India
+};
+
+const BAND_COMBINATIONS = [
+  { id: 'sar-flood', label: 'SAR Dual-Pol (VV + VH)', desc: 'Penetrates cloud cover & night; optimal for flood boundaries.' },
+  { id: 'true-color', label: 'True Color (RGB 4-3-2)', desc: 'Natural color composite mimicking human eye vision.' },
+  { id: 'false-color-nir', label: 'False Color NIR (8-4-3)', desc: 'Vegetation reflects in vibrant infrared red; water appears dark.' },
+  { id: 'ndwi-water', label: 'NDWI Water Index', desc: 'Normalized difference (Green - NIR) / (Green + NIR).' },
+  { id: 'ndvi-veg', label: 'NDVI Vegetation Health', desc: 'Canopy density & photosynthetic vitality measurement.' },
+];
 
 export const SatellitePage: React.FC = () => {
   const [selectedMissionId, setSelectedMissionId] = useState<string>('sentinel-1');
@@ -23,15 +34,10 @@ export const SatellitePage: React.FC = () => {
   const [cloudFilter, setCloudFilter] = useState<number>(15); // max cloud %
   const [activeDate, setActiveDate] = useState<string>('2026-07-02');
 
+  const missionCenters = MISSION_CENTERS;
   const mission = SATELLITE_MISSIONS.find(m => m.id === selectedMissionId) || SATELLITE_MISSIONS[0];
-
-  const bandCombinations = [
-    { id: 'sar-flood', label: 'SAR Dual-Pol (VV + VH)', desc: 'Penetrates cloud cover & night; optimal for flood boundaries.' },
-    { id: 'true-color', label: 'True Color (RGB 4-3-2)', desc: 'Natural color composite mimicking human eye vision.' },
-    { id: 'false-color-nir', label: 'False Color NIR (8-4-3)', desc: 'Vegetation reflects in vibrant infrared red; water appears dark.' },
-    { id: 'ndwi-water', label: 'NDWI Water Index', desc: 'Normalized difference (Green - NIR) / (Green + NIR).' },
-    { id: 'ndvi-veg', label: 'NDVI Vegetation Health', desc: 'Canopy density & photosynthetic vitality measurement.' },
-  ];
+  const mapCenter: [number, number] = missionCenters[selectedMissionId] ?? [26.32, 92.58];
+  const bandCombinations = BAND_COMBINATIONS;
 
   return (
     <div className="h-[calc(100vh-3.5rem)] flex flex-col lg:flex-row overflow-hidden bg-[#050816]">
@@ -61,7 +67,7 @@ export const SatellitePage: React.FC = () => {
               <button
                 key={sat.id}
                 onClick={() => setSelectedMissionId(sat.id)}
-                className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between ${
+                className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
                   selectedMissionId === sat.id
                     ? 'bg-[#0F172A] border-cyan-400 shadow-md shadow-cyan-900/30 text-white'
                     : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-900'
@@ -116,7 +122,7 @@ export const SatellitePage: React.FC = () => {
               <button
                 key={b.id}
                 onClick={() => setActiveBandCombo(b.id)}
-                className={`w-full text-left p-2.5 rounded-xl border text-xs transition-all ${
+                className={`w-full text-left p-2.5 rounded-xl border text-xs transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 ${
                   activeBandCombo === b.id
                     ? 'bg-[#0F172A] border-cyan-400 text-white'
                     : 'bg-slate-900/40 border-slate-800 text-slate-400 hover:text-slate-200'
@@ -169,7 +175,7 @@ export const SatellitePage: React.FC = () => {
 
         {/* Interactive Leaflet Map */}
         <LeafletMap
-          center={[26.32, 92.58]}
+          center={mapCenter}
           zoom={10}
           className="w-full h-full"
           showCoordinatesHUD={true}

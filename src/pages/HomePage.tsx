@@ -5,27 +5,26 @@ import {
   ArrowRight, 
   Satellite, 
   Sparkles, 
-  Play,
-  Activity,
-  ChevronRight,
-  GitCompare,
-  Layers,
-  Flame,
-  Droplets,
-  TreeDeciduous,
-  ShieldAlert
+  Play, 
+  ChevronRight, 
+  GitCompare, 
+  Layers, 
+  Droplets, 
+  TreeDeciduous, 
+  ShieldAlert 
 } from 'lucide-react';
 import { EarthGlobe } from '../components/EarthGlobe';
+
+const EXAMPLE_QUERIES = [
+  { title: 'Find flooded roads in Assam', query: 'Find flooded roads in Assam', icon: Droplets, target: '/dashboard' },
+  { title: 'Detect deforestation in Karnataka', query: 'Detect deforestation in Karnataka', icon: TreeDeciduous, target: '/dashboard' },
+  { title: 'Compare Kerala before and after floods', query: 'Compare Kerala before and after floods', icon: GitCompare, target: '/compare' },
+];
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [searchPrompt, setSearchPrompt] = useState('');
-
-  const exampleQueries = [
-    { title: 'Find flooded roads in Assam', query: 'Find flooded roads in Assam', icon: Droplets, target: '/dashboard' },
-    { title: 'Detect deforestation in Karnataka', query: 'Detect deforestation in Karnataka', icon: TreeDeciduous, target: '/dashboard' },
-    { title: 'Compare Kerala before and after floods', query: 'Compare Kerala before and after floods', icon: GitCompare, target: '/compare' },
-  ];
+  const exampleQueries = EXAMPLE_QUERIES;
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,11 +69,11 @@ export const HomePage: React.FC = () => {
             </h1>
 
             {/* Subtitle */}
-            <p className="text-lg sm:text-xl text-slate-300 max-w-xl font-sans font-light italic text-cyan-200/90 leading-relaxed">
-              "Ask questions about Earth using satellite imagery."
+            <p className="text-lg sm:text-xl text-cyan-200/90 max-w-xl font-light italic leading-relaxed">
+              &ldquo;Ask questions about Earth using satellite imagery.&rdquo;
             </p>
 
-            <p className="text-sm text-slate-400 max-w-lg font-sans">
+            <p className="text-sm text-slate-300 max-w-lg font-sans">
               Instant AI detection of floods, deforestation, and natural disasters powered by Sentinel SAR and optical constellations.
             </p>
 
@@ -90,10 +89,12 @@ export const HomePage: React.FC = () => {
                   onChange={(e) => setSearchPrompt(e.target.value)}
                   placeholder="Ask anything about Earth... (e.g. Find flooded roads in Assam)"
                   className="flex-1 bg-transparent px-2 py-2.5 text-sm text-white placeholder-slate-400 focus:outline-none font-sans"
+                  aria-label="Earth satellite query search"
                 />
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-[#050816] text-xs font-mono font-bold tracking-wider flex items-center gap-1.5 shadow-lg shadow-cyan-900/40 transition-all active:scale-95 shrink-0"
+                  aria-label="Submit query"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-[#050816] text-xs font-mono font-bold tracking-wider flex items-center gap-1.5 shadow-lg shadow-cyan-900/40 transition-all active:scale-95 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
                 >
                   <span>QUERY</span>
                   <ArrowRight className="w-4 h-4" />
@@ -114,7 +115,7 @@ export const HomePage: React.FC = () => {
                     <button
                       key={item.title}
                       onClick={() => handleSelectExample(item)}
-                      className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#0F172A]/90 border border-slate-800 hover:border-cyan-500/60 hover:bg-slate-800 text-xs font-sans text-slate-300 hover:text-white transition-all group active:scale-95"
+                      className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#0F172A]/90 border border-slate-800 hover:border-cyan-500/60 hover:bg-slate-800 text-xs font-sans text-slate-300 hover:text-white transition-all group active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                     >
                       <Icon className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
                       <span>{item.title}</span>
@@ -128,7 +129,7 @@ export const HomePage: React.FC = () => {
             <div className="pt-3 flex flex-wrap items-center gap-4">
               <Link
                 to="/dashboard"
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-[#050816] font-tech font-bold text-sm tracking-wider shadow-lg shadow-cyan-500/25 flex items-center gap-2 transition-all active:scale-95"
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-[#050816] font-tech font-bold text-sm tracking-wider shadow-lg shadow-cyan-500/25 flex items-center gap-2 transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
               >
                 <Satellite className="w-4 h-4" />
                 <span>Launch Analysis</span>
@@ -136,7 +137,7 @@ export const HomePage: React.FC = () => {
 
               <Link
                 to="/compare"
-                className="px-6 py-3 rounded-xl bg-[#0F172A] hover:bg-slate-800 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-300 hover:text-white font-tech font-medium text-sm tracking-wide flex items-center gap-2 transition-all shadow-md active:scale-95"
+                className="px-6 py-3 rounded-xl bg-[#0F172A] hover:bg-slate-800 border border-cyan-500/30 hover:border-cyan-500/60 text-cyan-300 hover:text-white font-tech font-medium text-sm tracking-wide flex items-center gap-2 transition-all shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
               >
                 <Play className="w-4 h-4 text-cyan-400 fill-cyan-400/20" />
                 <span>View Demo</span>

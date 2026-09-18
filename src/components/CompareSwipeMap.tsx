@@ -2,18 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { 
   GitCompare, 
-  Calendar, 
   Layers, 
   Sparkles, 
   Sliders, 
   Download, 
-  FileText,
-  AlertTriangle,
-  ArrowRight,
-  TrendingUp,
-  MapPin,
-  CheckCircle2,
-  Maximize2
+  CheckCircle2
 } from 'lucide-react';
 
 export const CompareSwipeMap: React.FC = () => {
@@ -45,6 +38,24 @@ export const CompareSwipeMap: React.FC = () => {
     }
 
     const satelliteUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+    const fallbackUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+    // Helper to create resilient tile layer with auto-fallback
+    const createResilientTileLayer = (targetMap: L.Map) => {
+      const tileLayer = L.tileLayer(satelliteUrl, { 
+        maxZoom: 18,
+        subdomains: 'abcd'
+      });
+      let fallbackTriggered = false;
+      tileLayer.on('tileerror', () => {
+        if (!fallbackTriggered) {
+          fallbackTriggered = true;
+          tileLayer.setUrl(fallbackUrl);
+        }
+      });
+      tileLayer.addTo(targetMap);
+      return tileLayer;
+    };
 
     // 1. BEFORE MAP
     const mapBefore = L.map(mapBeforeRef.current, {
@@ -53,7 +64,7 @@ export const CompareSwipeMap: React.FC = () => {
       zoomControl: true,
       attributionControl: false
     });
-    L.tileLayer(satelliteUrl, { maxZoom: 18 }).addTo(mapBefore);
+    createResilientTileLayer(mapBefore);
 
     // Normal baseline river polygon (0.3 km²)
     L.polygon([
@@ -75,7 +86,7 @@ export const CompareSwipeMap: React.FC = () => {
       zoomControl: false,
       attributionControl: false
     });
-    L.tileLayer(satelliteUrl, { maxZoom: 18 }).addTo(mapAfter);
+    createResilientTileLayer(mapAfter);
 
     // Huge flood deluge polygon (8.2 km²)
     const floodPolygon = L.polygon([
@@ -130,12 +141,20 @@ export const CompareSwipeMap: React.FC = () => {
     mapBeforeInstance.current = mapBefore;
     mapAfterInstance.current = mapAfter;
 
-    setTimeout(() => {
-      mapBefore.invalidateSize();
-      mapAfter.invalidateSize();
-    }, 250);
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapBeforeInstance.current) mapBeforeInstance.current.invalidateSize();
+      if (mapAfterInstance.current) mapAfterInstance.current.invalidateSize();
+    });
+
+    if (mapBeforeRef.current) resizeObserver.observe(mapBeforeRef.current);
+    if (mapAfterRef.current) resizeObserver.observe(mapAfterRef.current);
+
+    // Initial immediate kick
+    mapBefore.invalidateSize();
+    mapAfter.invalidateSize();
 
     return () => {
+      resizeObserver.disconnect();
       mapBefore.remove();
       mapAfter.remove();
       mapBeforeInstance.current = null;
