@@ -1,0 +1,6 @@
+{
+  "name": "SatQuery AI",
+  "description": "Futuristic enterprise-grade geospatial intelligence platform combining AI, satellite telemetry, and disaster analytics.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
